@@ -20,6 +20,7 @@ static PFbpage *PFfreebpage= NULL;	/* list of free buffer pages */
 //static int buf_mode; /* if 0, implement LRU else implement MRU */
 static int prev_buf_hit;
 static int prev_buf_miss;
+static int prev_buf_evicts;
 
 
 static void choose_mode(int given_buf_mode)
@@ -233,9 +234,10 @@ int error;		/* error value returned*/
 
 		*bpage = tbpage;
 		num_buf_evicts++;
-		avg_lifespan = ((float)avg_lifespan+(float)(buf_hit+buf_miss)-(float)(prev_buf_hit+prev_buf_miss))/num_buf_evicts;
+		avg_lifespan = ((((float)avg_lifespan)+prev_buf_evicts)+(float)(buf_hit+buf_miss)-(float)(prev_buf_hit+prev_buf_miss))/num_buf_evicts;
 		prev_buf_hit = buf_hit;
 		prev_buf_miss = buf_miss;
+		prev_buf_evicts = num_buf_evicts;
 
 	}
 
