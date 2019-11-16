@@ -38,3 +38,13 @@
 extern int PFerrno;		/* error number of last error */
 extern void PF_Init();
 extern void PF_PrintError();
+extern void PF_getstats();
+static int buf_requests=0; /* number of buffer requests*/
+/* statistics */
+static int buf_hit=0; /* buffer hit */
+static int buf_miss=0; /* buffer miss */
+static int num_buf_evicts=0; /* number of buffer evicts*/
+static int logical_ios=0; /* number of logical IOs*/
+static int physical_ios=0; /* number of physical IOs*/
+static float avg_lifespan=0; /* average lifespan of page in buffer */
+static int buf_mode=0; /* if 0, implement LRU else implement MRU */

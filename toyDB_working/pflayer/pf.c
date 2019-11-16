@@ -5,7 +5,7 @@
 #include <sys/file.h>
 #include "pf.h"
 #include "pftypes.h"
-static int buf_requests=0; /* number of buffer requests*/
+//extern int buf_requests; /* number of buffer requests*/
 /* To keep system V and PC users happy */
 #ifndef L_SET
 #define L_SET 0

@@ -6,7 +6,7 @@
 
 #define MAXRECS	10000	/* max # of records to insert */
 #define FNAME_LENGTH 80	/* file name size */
-
+//extern int num_buf_evicts;
 main()
 {
 int fd;	/* file descriptor for the index */
@@ -150,4 +150,6 @@ int testval;
 		AM_DestroyIndex(RELNAME,0);
 
 	printf("test3 done!\n");
+	//printf("%s\n", num_buf_evicts);
+	Buf_getstats();
 }

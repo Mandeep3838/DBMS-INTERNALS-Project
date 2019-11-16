@@ -11,13 +11,15 @@ static PFbpage *PFlastbpage = NULL;	/* ptr to last buffer page, or NULL */
 static PFbpage *PFfreebpage= NULL;	/* list of free buffer pages */
 
 /* statistics */
-static int buf_hit=0; /* buffer hit */
-static int buf_miss=0; /* buffer miss */
-static int num_buf_evicts=0; /* number of buffer evicts*/
-static int logical_ios=0; /* number of logical IOs*/
-static int physical_ios=0; /* number of physical IOs*/
-static int avg_lifespan=0; /* average lifespan of page in buffer */
-static int buf_mode=0; /* if 0, implement LRU else implement MRU */
+//static int buf_hit; /* buffer hit */
+//static int buf_miss; /* buffer miss */
+//static int num_buf_evicts; /* number of buffer evicts*/
+//static int logical_ios; /* number of logical IOs*/
+//static int physical_ios; /* number of physical IOs*/
+//static float avg_lifespan; /* average lifespan of page in buffer */
+//static int buf_mode; /* if 0, implement LRU else implement MRU */
+static int prev_buf_hit;
+static int prev_buf_miss;
 
 
 static void choose_mode(int given_buf_mode)
@@ -219,8 +221,9 @@ int error;		/* error value returned*/
 		if (tbpage->dirty&&((error=(*writefcn)(tbpage->fd,
 				tbpage->page,&tbpage->fpage))!= PFE_OK))
 			return(error);
+		physical_ios++;
 		tbpage->dirty = FALSE;
-
+		
 		/* unlink from hash table */
 		if ((error=PFhashDelete(tbpage->fd,tbpage->page))!= PFE_OK)
 			return(error);
@@ -230,6 +233,9 @@ int error;		/* error value returned*/
 
 		*bpage = tbpage;
 		num_buf_evicts++;
+		avg_lifespan = ((float)avg_lifespan+(float)(buf_hit+buf_miss)-(float)(prev_buf_hit+prev_buf_miss))/num_buf_evicts;
+		prev_buf_hit = buf_hit;
+		prev_buf_miss = buf_miss;
 
 	}
 
@@ -475,10 +481,10 @@ int error;		/* error code */
 			*/
 			if (bpage->dirty&&((error=(*writefcn)(fd,bpage->page,
 					&bpage->fpage))!= PFE_OK))
-				/* error writing file */
 				return(error);
+			physical_ios++;
 			bpage->dirty = FALSE;
-
+			
 			/* get rid of it from the hash table */
 			if ((error=PFhashDelete(fd,bpage->page))!= PFE_OK){
 				/* internal error */
@@ -560,4 +566,10 @@ PFbpage *bpage;
 				bpage->fd,bpage->page,(int)bpage->fixed,
 				(int)bpage->dirty,(int)&bpage->fpage);
 	}
+}
+void Buf_getstats()
+{
+	float hit_rate = (float)buf_hit/(buf_hit+buf_miss);
+	float miss_rate = (float)buf_miss/(buf_hit+buf_miss);
+	printf("%s%d\n%s%f\n%s%d\n%s%f\n%s%d\n%s%d\n%s%d\n%s%f\n%s%d\n%","Buffer Hits: ", buf_hit, "Buffer Hit Rate: ", hit_rate, "Buffer Misses: ", buf_miss, "Buffer Miss Rate: ", miss_rate, "Buffer Evicts: ",num_buf_evicts, "Logical I/Os: ", logical_ios, "Physical I/Os: ", physical_ios, "Average Lifespan: ", avg_lifespan, "Buffer Requests: ", buf_hit+buf_miss);
 }
