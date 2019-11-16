@@ -5,7 +5,7 @@
 #include <sys/file.h>
 #include "pf.h"
 #include "pftypes.h"
-
+static int buf_requests=0; /* number of buffer requests*/
 /* To keep system V and PC users happy */
 #ifndef L_SET
 #define L_SET 0
@@ -455,7 +455,7 @@ RETURN VALUE:
 int temppage;	/* page number to scan for next valid page */
 int error;	/* error code */
 PFfpage *fpage;	/* pointer to file page */
-
+buf_requests++; /* buffer request increment */
 	if (PFinvalidFd(fd)){
 		PFerrno = PFE_FD;
 		return(PFerrno);
@@ -512,7 +512,7 @@ RETURN VALUE:
 {
 int error;
 PFfpage *fpage;
-
+buf_requests++; /* buffer requests increment */
 	if (PFinvalidFd(fd)){
 		PFerrno = PFE_FD;
 		return(PFerrno);
@@ -566,7 +566,7 @@ RETURN VALUE:
 {
 PFfpage *fpage;	/* pointer to file page */
 int error;
-
+buf_requests++; /* buffer requests increment */
 	if (PFinvalidFd(fd)){
 		PFerrno= PFE_FD;
 		return(PFerrno);

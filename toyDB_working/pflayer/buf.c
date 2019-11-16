@@ -11,15 +11,13 @@ static PFbpage *PFlastbpage = NULL;	/* ptr to last buffer page, or NULL */
 static PFbpage *PFfreebpage= NULL;	/* list of free buffer pages */
 
 /* statistics */
-static int buf_reads; /* number of buffer read requests*/
-static int buf_write; /* number of buffer write requests*/
-static int buf_hit_rate; /* buffer hit rate*/
-static int buf_miss_rate; /* buffer miss rate */
-static int num_buf_evicts; /* number of buffer evicts*/
-static int logic_ios; /* number of logical IOs*/
-static int physical_ios; /* number of physical IOs*/
-static int avg_lifespan; /* average lifespan of page in buffer */
-static int buf_mode; /* if 0, implement LRU else implement MRU */
+static int buf_hit=0; /* buffer hit */
+static int buf_miss=0; /* buffer miss */
+static int num_buf_evicts=0; /* number of buffer evicts*/
+static int logical_ios=0; /* number of logical IOs*/
+static int physical_ios=0; /* number of physical IOs*/
+static int avg_lifespan=0; /* average lifespan of page in buffer */
+static int buf_mode=0; /* if 0, implement LRU else implement MRU */
 
 
 static void choose_mode(int given_buf_mode)
@@ -107,7 +105,7 @@ GLOBAL VARIABLES MODIFIED:
 
 }
 
-static fetch_victim_lru() /* fetch victim to be swapped based on LRU replacement policy */
+static PFbpage* fetch_victim_lru() /* fetch victim to be swapped based on LRU replacement policy */
 {
 	PFbpage *tbpage;
 	for (tbpage=PFlastbpage;tbpage!=NULL;tbpage=tbpage->prevpage){
@@ -117,7 +115,7 @@ static fetch_victim_lru() /* fetch victim to be swapped based on LRU replacement
 		}
 	return (tbpage);
 }
-static fetch_victim_mru() /* fetch victim to be swapped based on MRU replacement policy */
+static PFbpage* fetch_victim_mru() /* fetch victim to be swapped based on MRU replacement policy */
 {
 	PFbpage *tbpage;
 	for (tbpage=PFfirstbpage;tbpage!=NULL;tbpage=tbpage->nextpage){
@@ -203,6 +201,21 @@ int error;		/* error value returned*/
 		}
 
 		/* write out the dirty page */
+		/*
+		if(tbpage->dirty==TRUE)
+		{
+			if((error=(*writefcn)(tbpage->fd,
+				tbpage->page,&tbpage->fpage))!= PFE_OK)
+			{
+				return(error);
+			}
+			else
+			{
+				physical_ios++;
+			}
+		}
+		tbpage->dirty = FALSE;
+		*/
 		if (tbpage->dirty&&((error=(*writefcn)(tbpage->fd,
 				tbpage->page,&tbpage->fpage))!= PFE_OK))
 			return(error);
@@ -216,6 +229,7 @@ int error;		/* error value returned*/
 		PFbufUnlink(tbpage);
 
 		*bpage = tbpage;
+		num_buf_evicts++;
 
 	}
 
@@ -265,7 +279,7 @@ int error;
 
 	if ((bpage=PFhashFind(fd,pagenum)) == NULL){
 		/* page not in buffer. */
-		
+		physical_ios++; /* phsical ios increment */
 		/* allocate an empty page */
 		if ((error=PFbufInternalAlloc(&bpage,writefcn))!= PFE_OK){
 			/* error */
@@ -296,6 +310,7 @@ int error;
 		bpage->fd = fd;
 		bpage->page = pagenum;
 		bpage->dirty = FALSE;
+		buf_miss++; /* buffer miss increment */
 	}
 	else if (bpage->fixed){
 		/* page already in memory, and is fixed, so we can't
@@ -304,7 +319,8 @@ int error;
 		PFerrno = PFE_PAGEFIXED;
 		return(PFerrno);
 	}
-
+	buf_hit++; /* buffer hit increment */
+	logical_ios++; /* logical ios increment */
 	/* Fix the page in the buffer then return*/
 	bpage->fixed = TRUE;
 	*fpage = &bpage->fpage;
@@ -434,7 +450,6 @@ IMPLEMENTATION NOTES:
 PFbpage *bpage;	/* ptr to buffer pages to search */
 PFbpage *temppage;
 int error;		/* error code */
-
 	/* Do linear scan of the buffer to find pages belonging to the file */
 	bpage = PFfirstbpage;
 	while (bpage != NULL){
@@ -446,6 +461,18 @@ int error;		/* error code */
 			}
 
 			/* write out dirty page */
+			/*
+			if(bpage->dirty==TRUE)
+			{
+				if((error=(*writefcn)(fd,bpage->page,
+					&bpage->fpage))!= PFE_OK)
+				{
+					return(error);
+				}
+				physical_ios++;
+			}
+			bpage->dirty = FALSE;
+			*/
 			if (bpage->dirty&&((error=(*writefcn)(fd,bpage->page,
 					&bpage->fpage))!= PFE_OK))
 				/* error writing file */
