@@ -27,7 +27,7 @@ amglobals.o : amglobals.c am.h
 
 amprint.o : amprint.c am.h pf.h 
 	cc -c amprint.c
-	
+
 main.o : main.c am.h pf.h 
 	cc -c main.c
 
