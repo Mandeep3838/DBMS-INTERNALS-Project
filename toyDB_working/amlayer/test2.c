@@ -24,26 +24,26 @@ int numrec;	/* # of records retrieved in s scan */
 
 	/* create index */
 	printf("creating index\n");
-	xAM_CreateIndex(RELNAME,0,CHAR_TYPE,STRING_SIZE);
+	AM_CreateIndex(RELNAME,0,CHAR_TYPE,STRING_SIZE);
 
 	/* open the index */
 	printf("opening index\n");
 	sprintf(fname,"%s.0",RELNAME);
-	fd = xPF_OpenFile(fname);
+	fd = PF_OpenFile(fname);
 
 	/* insert into index on character */
 	printf("inserting into index on char\n");
 	for (recnum=0; recnum < MAXRECS; recnum++){
 		sprintf(buf,"%d",recnum);
 		padstring(buf,STRING_SIZE);
-		xAM_InsertEntry(fd,CHAR_TYPE,STRING_SIZE,buf,IntToRecId(recnum));
+		AM_InsertEntry(fd,CHAR_TYPE,STRING_SIZE,buf,IntToRecId(recnum));
 	}
 
 	printf("opening index scan on char\n");
-	sd = xAM_OpenIndexScan(fd,CHAR_TYPE,STRING_SIZE,EQ_OP,NULL);
+	sd = AM_OpenIndexScan(fd,CHAR_TYPE,STRING_SIZE,EQ_OP,NULL);
 	printf("retrieving recid's from scan descriptor %d\n",sd);
 	numrec = 0;
-	while((recnum=RecIdToInt(xAM_FindNextEntry(sd)))>= 0){
+	while((recnum=RecIdToInt(AM_FindNextEntry(sd)))>= 0){
 		printf("%d\n",recnum);
 		numrec++;
 	}
@@ -51,9 +51,9 @@ int numrec;	/* # of records retrieved in s scan */
 
 	/* destroy everything */
 	printf("closing down\n");
-	xAM_CloseIndexScan(sd);
-	xPF_CloseFile(fd);
-	xAM_DestroyIndex(RELNAME,0);
+	AM_CloseIndexScan(sd);
+	PF_CloseFile(fd);
+	AM_DestroyIndex(RELNAME,0);
 
 	printf("test2 done!\n");
 	Buf_getstats();
