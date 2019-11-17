@@ -1,3 +1,12 @@
+t1.out : am.o amfns.o amsearch.o aminsert.o amstack.o amglobals.o ../pflayer/pflayer.o test1.o amscan.o amprint.o
+	cc am.o amfns.o amsearch.o aminsert.o  amstack.o amglobals.o ../pflayer/pflayer.o test1.o amscan.o amprint.o 
+
+t2.out : am.o amfns.o amsearch.o aminsert.o amstack.o amglobals.o ../pflayer/pflayer.o test2.o amscan.o amprint.o
+	cc am.o amfns.o amsearch.o aminsert.o  amstack.o amglobals.o ../pflayer/pflayer.o test2.o amscan.o amprint.o
+
+t3.out : am.o amfns.o amsearch.o aminsert.o amstack.o amglobals.o ../pflayer/pflayer.o test3.o amscan.o amprint.o
+	cc am.o amfns.o amsearch.o aminsert.o  amstack.o amglobals.o ../pflayer/pflayer.o test3.o amscan.o amprint.o 
+ 
 a.out : am.o amfns.o amsearch.o aminsert.o amstack.o amglobals.o ../pflayer/pflayer.o main.o amscan.o amprint.o
 	cc am.o amfns.o amsearch.o aminsert.o  amstack.o amglobals.o ../pflayer/pflayer.o main.o amscan.o amprint.o 
 
@@ -28,6 +37,15 @@ amglobals.o : amglobals.c am.h
 amprint.o : amprint.c am.h pf.h 
 	cc -c amprint.c
 	
+test1.o : test1.c am.h pf.h
+	cc -c test1.c
+
+test2.o : test2.c am.h pf.h
+	cc -c test2.c
+
+test3.o : test3.o am.h pf.h
+	cc -c test3.c
+
 main.o : main.c am.h pf.h 
 	cc -c main.c
 

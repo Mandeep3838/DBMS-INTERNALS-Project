@@ -72,3 +72,27 @@ Logical I/Os: 90369
 Physical I/Os: 83448
 Average Lifespan: 3.164242
 Buffer Requests: 132031
+
+Buffer Size: 60
+Buffer Mode: MRU
+Buffer Hits: 90369
+Buffer Hit Rate: 0.684453
+Buffer Misses: 41662
+Buffer Miss Rate: 0.315547
+Buffer Evicts: 41725
+Logical I/Os: 90369
+Physical I/Os: 83448
+Average Lifespan: 3.164242
+Buffer Requests: 132031
+
+Buffer Size: 60
+Buffer Mode: MRU
+Buffer Hits: 90369
+Buffer Hit Rate: 0.684453
+Buffer Misses: 41662
+Buffer Miss Rate: 0.315547
+Buffer Evicts: 41725
+Logical I/Os: 90369
+Physical I/Os: 83448
+Average Lifespan: 3.164242
+Buffer Requests: 132031
