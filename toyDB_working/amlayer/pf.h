@@ -39,3 +39,4 @@ extern int PFerrno;		/* error number of last error */
 extern void PF_Init();
 extern void PF_PrintError();
 extern void Buf_getstats();
+extern void Choose_mode(int mode);

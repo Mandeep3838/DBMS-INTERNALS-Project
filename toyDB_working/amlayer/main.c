@@ -20,6 +20,7 @@ int testval;
 	printf("initializing\n");
 	PF_Init();
 
+
 	/* create index */
 	printf("creating index\n");
 	AM_CreateIndex(RELNAME,0,INT_TYPE,sizeof(int));

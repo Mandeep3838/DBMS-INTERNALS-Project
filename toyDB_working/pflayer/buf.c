@@ -23,7 +23,7 @@ static int prev_buf_miss;
 static int prev_buf_evicts;
 
 
-static void choose_mode(int given_buf_mode)
+void Choose_mode(int given_buf_mode)
 {
 	buf_mode = given_buf_mode;
 }
@@ -234,7 +234,7 @@ int error;		/* error value returned*/
 
 		*bpage = tbpage;
 		num_buf_evicts++;
-		avg_lifespan = ((((float)avg_lifespan)+prev_buf_evicts)+(float)(buf_hit+buf_miss)-(float)(prev_buf_hit+prev_buf_miss))/num_buf_evicts;
+		avg_lifespan = ((((float)avg_lifespan)*prev_buf_evicts)+(float)(buf_hit+buf_miss)-(float)(prev_buf_hit+prev_buf_miss))/num_buf_evicts;
 		prev_buf_hit = buf_hit;
 		prev_buf_miss = buf_miss;
 		prev_buf_evicts = num_buf_evicts;
@@ -569,9 +569,24 @@ PFbpage *bpage;
 				(int)bpage->dirty,(int)&bpage->fpage);
 	}
 }
+
 void Buf_getstats()
 {
+	FILE *fptr = fopen("LRU_test1_20.txt", "a"); 
+    if (fptr == NULL) 
+    { 
+        printf("Could not open file"); 
+        return 0; 
+    } 
 	float hit_rate = (float)buf_hit/(buf_hit+buf_miss);
 	float miss_rate = (float)buf_miss/(buf_hit+buf_miss);
-	printf("%s%d\n%s%f\n%s%d\n%s%f\n%s%d\n%s%d\n%s%d\n%s%f\n%s%d\n%","Buffer Hits: ", buf_hit, "Buffer Hit Rate: ", hit_rate, "Buffer Misses: ", buf_miss, "Buffer Miss Rate: ", miss_rate, "Buffer Evicts: ",num_buf_evicts, "Logical I/Os: ", logical_ios, "Physical I/Os: ", physical_ios, "Average Lifespan: ", avg_lifespan, "Buffer Requests: ", buf_hit+buf_miss);
+	char* repl_policy;
+	if (buf_mode == 0){
+		repl_policy = "LRU";
+	} else {
+		repl_policy = "MRU";
+	}
+
+	fprintf(fptr,"\n%s%d\n%s%s\n%s%d\n%s%f\n%s%d\n%s%f\n%s%d\n%s%d\n%s%d\n%s%f\n%s%d\n","Buffer Size: ", PF_MAX_BUFS, "Buffer Mode: ", repl_policy, "Buffer Hits: ", buf_hit, "Buffer Hit Rate: ", hit_rate, "Buffer Misses: ", buf_miss, "Buffer Miss Rate: ", miss_rate, "Buffer Evicts: ",num_buf_evicts, "Logical I/Os: ", logical_ios, "Physical I/Os: ", physical_ios, "Average Lifespan: ", avg_lifespan, "Buffer Requests: ", buf_hit+buf_miss);
+	fclose(fptr);
 }

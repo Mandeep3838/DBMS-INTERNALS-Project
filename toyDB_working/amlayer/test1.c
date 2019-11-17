@@ -3,6 +3,7 @@ test1.c: tests simple index insertion and scans.
 ************************************************************************/
 #include <stdio.h>
 #include "am.h"
+#include "pf.h"
 #include "testam.h"
 
 #define MAXRECS	50
@@ -81,4 +82,5 @@ int numrec;		/* # of records retrieved*/
 	xAM_DestroyIndex(RELNAME,RECVAL_INDEXNO);
 
 	printf("test1 done!\n");
+	Buf_getstats();
 }

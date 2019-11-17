@@ -1,6 +1,7 @@
 /* test3.c: tests deletion and scan. */
 #include <stdio.h>
 #include "am.h"
+#include "pf.h"
 #include "testam.h"
 
 #define MAXRECS	512	/* max # of records to insert */
@@ -149,4 +150,5 @@ int testval;
 	xAM_DestroyIndex(RELNAME,0);
 
 	printf("test3 done!\n");
+	Buf_getstats();
 }

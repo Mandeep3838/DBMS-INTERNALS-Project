@@ -2,6 +2,7 @@
 splitting of pages of your B+ tree */
 #include <stdio.h>
 #include "am.h"
+#include "pf.h"
 #include "testam.h"
 
 #define STRING_SIZE 250	/* string */
@@ -55,4 +56,5 @@ int numrec;	/* # of records retrieved in s scan */
 	xAM_DestroyIndex(RELNAME,0);
 
 	printf("test2 done!\n");
+	Buf_getstats();
 }
